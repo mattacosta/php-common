@@ -1,0 +1,11 @@
+// https://www.typescriptlang.org/docs/handbook/compiler-options.html
+{
+    "compilerOptions": {
+        "declaration": true,
+        "module": "commonjs",
+        "outDir": "../lib",
+        "strict": true,
+        "stripInternal": true,
+        "target": "es2015"
+    }
+}
