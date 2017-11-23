@@ -17,10 +17,9 @@
 'use strict';
 
 /**
- * Defines an interface with Node.js features that may be added to `Error`
- * objects.
+ * Defines an interface for errors with Node.js features.
  */
-interface ErrorConstructor {
+interface NodeError {
 
   stackTraceLimit: number;
 
@@ -43,10 +42,13 @@ export class Exception extends Error {
     if (typeof fn === 'undefined') {
       fn = this.constructor;
     }
-    if (typeof (<any>Error).captureStackTrace === 'function') {
-      const NodeError: ErrorConstructor = <any>Error;
-      NodeError.captureStackTrace(this, fn);
+    if (Exception.isNodeError(Error)) {
+      Error.captureStackTrace(this, fn);
     }
+  }
+
+  private static isNodeError(type: any): type is NodeError {
+    return typeof type.captureStackTrace === 'function';
   }
 
 }
