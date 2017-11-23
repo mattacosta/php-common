@@ -24,8 +24,8 @@
     },
     "scripts": {
         "build": "tsc -p ./src",
-        "build:test": "tsc -p ./test",
-        "watch": "tsc -w -p ./src",
-        "test": "mocha --recursive ./out/test"
+        "pretest": "tsc -p ./test",
+        "test": "mocha --recursive ./out/test",
+        "watch": "tsc -w -p ./src"
     }
 }

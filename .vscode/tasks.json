@@ -11,6 +11,11 @@
                 "isDefault": true
             },
             "problemMatcher": "$tsc"
+        },
+        {
+            "type": "shell",
+            "command": "npm run pretest",
+            "label": "pretest"
         }
     ]
 }
