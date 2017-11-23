@@ -43,7 +43,7 @@ export class Debug {
   }
 
   /**
-   * Asserts that a condition is `true`. If not an exception is thrown.
+   * Asserts that a condition is `true` and throws an exception if not.
    *
    * This method does nothing until `Debug.enable()` is called.
    */
@@ -56,6 +56,13 @@ export class Debug {
    */
   public static fail(message?: string) {
     Debug.assert(false, message);
+  }
+
+  /**
+   * Makes an assertion that always passes.
+   */
+  public static pass(message?: string) {
+    Debug.assert(true, message);
   }
 
 }
