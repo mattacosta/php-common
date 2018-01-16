@@ -88,7 +88,7 @@ export class Hash {
    * @param {number} hash
    *   A previous FNV-1a hash code.
    *
-   * @see Hash.fnvHash()
+   * @see Hash.fnv()
    */
   public static combineFnvHash(ch: number, hash: number): number
   public static combineFnvHash(text: string, hash: number): number
@@ -110,7 +110,7 @@ export class Hash {
    * @param {number} start
    *   The index of the first character to hash.
    * @param {number=} length
-   *   (optional) The number of characters to hash.
+   *   The number of characters to hash.
    */
   public static fnv(text: string, start: number, length?: number): number {
     let hash = Hash.FnvOffsetBias;
@@ -127,11 +127,11 @@ export class Hash {
    * Computes a generic hash of a string.
    *
    * @param {string} text
-   *   The input string
-   *
-   * @see [Generate a Hash from string in Javascript/jQuery](http://stackoverflow.com/questions/7616461)
+   *   The input string.
    */
   public static fromString(text: string): number {
+    // Generate a Hash from string in Javascript/jQuery
+    // https://stackoverflow.com/q/7616461
     let hash = 0, length = text.length;
     for (let i = 0; i < length; i++) {
       hash = (hash * 31) + text.charCodeAt(i);
