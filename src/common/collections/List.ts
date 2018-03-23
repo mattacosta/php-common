@@ -55,11 +55,22 @@ export interface ICountable {
  */
 export class List<T> {
 
+  /**
+   * Performs a binary search of a list for a given value.
+   *
+   * @param {T[]} list
+   *   The sorted list to search.
+   * @param {T} value
+   *   The value to search for.
+   * @param {IComparer<T>} predicate
+   *   A function that will compare list values.
+   *
+   * @return {number}
+   *   The index where the search value was found, or a negative number that
+   *   is the two's complement of the index where the search value should have
+   *   been found.
+   */
   public static binarySearch<T>(list: T[], value: T, predicate: IComparer<T>): number {
-    if (!list || list.length == 0) {
-      return -1;
-    }
-
     let low = 0, high = list.length - 1;
     while (low <= high) {
       // Do they even teach it like this anymore? Long story short, a + b
@@ -77,8 +88,7 @@ export class List<T> {
         low = mid + 1;
       }
     }
-
-    return -1;  // @todo ~low
+    return ~low;
   }
 
 }
