@@ -58,7 +58,7 @@ export class List<T> {
   /**
    * Performs a binary search of a list for a given value.
    *
-   * @param {T[]} list
+   * @param {ReadonlyArray<T>} list
    *   The sorted list to search.
    * @param {T} value
    *   The value to search for.
@@ -70,7 +70,7 @@ export class List<T> {
    *   is the two's complement of the index where the search value should have
    *   been found.
    */
-  public static binarySearch<T>(list: T[], value: T, predicate: IComparer<T>): number {
+  public static binarySearch<T>(list: ReadonlyArray<T>, value: T, predicate: IComparer<T>): number {
     let low = 0, high = list.length - 1;
     while (low <= high) {
       // Do they even teach it like this anymore? Long story short, a + b
