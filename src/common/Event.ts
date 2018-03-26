@@ -28,14 +28,45 @@ export interface IEventHandler<TEventArgs> {
 }
 
 /**
- * Defines an interface for objects that need to dispatch events.
+ * Defines an interface for objects that can modify a list of event subscribers.
  */
-export interface IEvent<TEventArgs> extends IDisposable {
+export interface IEvent<TEventArgs> {
 
+  /**
+   * Adds a function to be called when this event is triggered.
+   *
+   * All event handlers are executed synchonously and in the order that they
+   * were added. If an event handler can be executed asynchronously, then it
+   * should use `setImmediate()` or `process.nextTick()` methods.
+   *
+   * @param {IEventHandler<TEventArgs>} handler
+   *   The event handler to add.
+   */
   addHandler(handler: IEventHandler<TEventArgs>): void;
 
+  /**
+   * Removes a function from the event handlers associated with this event.
+   *
+   * @param {IEventHandler<TEventArgs>} handler
+   *   The event handler to remove.
+   */
   removeHandler(handler: IEventHandler<TEventArgs>): void;
 
+}
+
+/**
+ * Defines an interface for objects that need to dispatch events.
+ */
+export interface IEventEmitter<TEventArgs> extends IDisposable, IEvent<TEventArgs> {
+
+  /**
+   * Executes all subscribed event handlers.
+   *
+   * @param {*} sender
+   *   The event sender.
+   * @param {TEventArgs} args
+   *   An object containing event arguments.
+   */
   trigger(sender: any, args: TEventArgs): void;
 
 }
@@ -50,7 +81,7 @@ export class EventArgs {}
  * to. When triggered, the subscribing handler is provided with the sender and
  * any custom event arguments.
  */
-export class Event<TEventArgs> implements IEvent<TEventArgs> {
+export class Event<TEventArgs> implements IEventEmitter<TEventArgs> {
 
   /**
    * A list of subscribed event handlers.
@@ -58,14 +89,7 @@ export class Event<TEventArgs> implements IEvent<TEventArgs> {
   protected handlers: IEventHandler<TEventArgs>[] = [];
 
   /**
-   * Adds a function to be called when this event is triggered.
-   *
-   * All event handlers are executed synchonously and in the order that they
-   * were added. If an event handler can be executed asynchronously, then it
-   * should use `setImmediate()` or `process.nextTick()` methods.
-   *
-   * @param {IEventHandler<TEventArgs>} handler
-   *   The event handler to add.
+   * @inheritDoc
    */
   public addHandler(handler: IEventHandler<TEventArgs>) {
     // Make sure that event handlers are not added multiple times.
@@ -80,10 +104,7 @@ export class Event<TEventArgs> implements IEvent<TEventArgs> {
   }
 
   /**
-   * Removes a function from the event handlers associated with this event.
-   *
-   * @param {IEventHandler<TEventArgs>} handler
-   *   The event handler to remove.
+   * @inheritDoc
    */
   public removeHandler(handler: IEventHandler<TEventArgs>) {
     for (let i = 0; i < this.handlers.length; i++) {
@@ -95,12 +116,7 @@ export class Event<TEventArgs> implements IEvent<TEventArgs> {
   }
 
   /**
-   * Executes all subscribed event handlers.
-   *
-   * @param {*} sender
-   *   The event sender.
-   * @param {TEventArgs} args
-   *   An object containing event arguments.
+   * @inheritDoc
    */
   public trigger(sender: any, args: TEventArgs) {
     for (let i = 0; i < this.handlers.length; i++) {
