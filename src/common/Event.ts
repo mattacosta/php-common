@@ -41,16 +41,20 @@ export interface IEvent<TEventArgs> {
    *
    * @param {IEventHandler<TEventArgs>} handler
    *   The event handler to add.
+   * @param {*} context
+   *   The value of `this` to use when invoking the event handler.
    */
-  addHandler(handler: IEventHandler<TEventArgs>): void;
+  addHandler(handler: IEventHandler<TEventArgs>, context?: any): void;
 
   /**
    * Removes a function from the event handlers associated with this event.
    *
    * @param {IEventHandler<TEventArgs>} handler
    *   The event handler to remove.
+   * @param {*} context
+   *   The value of `this` to use when invoking the event handler.
    */
-  removeHandler(handler: IEventHandler<TEventArgs>): void;
+  removeHandler(handler: IEventHandler<TEventArgs>, context?: any): void;
 
 }
 
@@ -84,6 +88,11 @@ export class EventArgs {}
 export class Event<TEventArgs> implements IEventEmitter<TEventArgs> {
 
   /**
+   * A list of contexts used when invoking an event handler.
+   */
+  protected contexts: any[] = [];
+
+  /**
    * A list of subscribed event handlers.
    */
   protected handlers: IEventHandler<TEventArgs>[] = [];
@@ -91,24 +100,25 @@ export class Event<TEventArgs> implements IEventEmitter<TEventArgs> {
   /**
    * @inheritDoc
    */
-  public addHandler(handler: IEventHandler<TEventArgs>) {
+  public addHandler(handler: IEventHandler<TEventArgs>, context?: any) {
     // Make sure that event handlers are not added multiple times.
     for (let i = 0; i < this.handlers.length; i++) {
-      if (this.handlers[i] === handler) {
+      if (this.handlers[i] === handler && this.contexts[i] === context) {
         return;
       }
     }
-    // @todo If this list gets too long, then there is probably a leak
-    // somewhere. Log a warning?
+    this.contexts.push(context);
     this.handlers.push(handler);
   }
 
   /**
    * @inheritDoc
    */
-  public removeHandler(handler: IEventHandler<TEventArgs>) {
+  public removeHandler(handler: IEventHandler<TEventArgs>, context?: any) {
     for (let i = 0; i < this.handlers.length; i++) {
-      if (this.handlers[i] === handler) {
+      // Fun fact: You can't remove a handler if its context was NaN.
+      if (this.handlers[i] === handler && this.contexts[i] === context) {
+        this.contexts.splice(i, 1);
         this.handlers.splice(i, 1);
         break;
       }
@@ -123,7 +133,7 @@ export class Event<TEventArgs> implements IEventEmitter<TEventArgs> {
       // @todo This does not handle the case where a handler tries to trigger
       //   the same event again (the second event would be executed before the
       //   first is complete).
-      this.handlers[i](sender, args);
+      this.handlers[i].call(this.contexts[i], sender, args);
     }
   }
 
@@ -131,6 +141,7 @@ export class Event<TEventArgs> implements IEventEmitter<TEventArgs> {
    * Releases all references to event handlers.
    */
   public dispose() {
+    this.contexts = [];
     this.handlers = [];
   }
 
