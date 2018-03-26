@@ -78,7 +78,14 @@ export interface IEventEmitter<TEventArgs> extends IDisposable, IEvent<TEventArg
 /**
  * A generic event argument.
  */
-export class EventArgs {}
+export class EventArgs {
+
+  /**
+   * An event argument with no data.
+   */
+  public static readonly Empty = new EventArgs();
+
+}
 
 /**
  * Allows a providing class to implement events that an observer can subscribe
