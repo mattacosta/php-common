@@ -16,42 +16,54 @@
 
 'use strict';
 
+import { LogLevel } from './LogLevel';
+
 /**
  * Defines an interface for objects that can log messages.
  */
 export interface ILogger {
 
   /**
-   * Log an error message.
+   * Logs an error message.
    *
    * @param {string} message
-   *   The message to log.
+   *   The log message.
+   * @param {...any} args
+   *   Any additional log arguments.
    */
   error(message: string, ...args: any[]): void;
 
   /**
-   * Log an informational message.
+   * Logs an informational message.
    *
    * @param {string} message
-   *   The message to log.
+   *   The log message.
+   * @param {...any} args
+   *   Any additional log arguments.
    */
   info(message: string, ...args: any[]): void;
 
   /**
-   * Log a notice.
+   * Logs a warning message.
    *
    * @param {string} message
-   *   The message to log.
-   */
-  notice(message: string, ...args: any[]): void;
-
-  /**
-   * Log a warning.
-   *
-   * @param {string} message
-   *   The message to log.
+   *   The log message.
+   * @param {...any} args
+   *   Any additional log arguments.
    */
   warn(message: string, ...args: any[]): void;
+
+  /**
+   * Logs a message using the given severity level.
+   *
+   * @param {LogLevel} severity
+   *   The severity of the log entry.
+   * @param {string} message
+   *   The log message.
+   * @param {...any} args
+   *   Any additional log arguments.
+   */
+  log(severity: LogLevel, message: string, ...args: any[]): void;
 
 }
 
@@ -63,57 +75,28 @@ export abstract class LoggerBase implements ILogger {
   /**
    * @inheritDoc
    */
-  public abstract error(message: string, ...args: any[]): void;
-
-  /**
-   * @inheritDoc
-   */
-  public abstract info(message: string, ...args: any[]): void;
-
-  /**
-   * @inheritDoc
-   */
-  public abstract notice(message: string, ...args: any[]): void;
-
-  /**
-   * @inheritDoc
-   */
-  public abstract warn(message: string, ...args: any[]): void;
-
-}
-
-/**
- * Logs messages to the console.
- */
-export class ConsoleLogger extends LoggerBase {
-
-  /**
-   * @inheritDoc
-   */
   public error(message: string, ...args: any[]) {
-    console.error(message, ...args);
+    this.log(LogLevel.Error, message, ...args);
   }
 
   /**
    * @inheritDoc
    */
   public info(message: string, ...args: any[]) {
-    console.log(message, ...args);
+    this.log(LogLevel.Information, message, ...args);
   }
 
   /**
    * @inheritDoc
    */
-  public notice(message: string, ...args: any[]) {
-    console.log(message, ...args);
+  public warn(message: string, ...args: any[]): void {
+    this.log(LogLevel.Warning, message, ...args);
   }
 
   /**
-   * @inheritDoc
+   * @inheritdoc
    */
-  public warn(message: string, ...args: any[]) {
-    console.warn(message, ...args);
-  }
+  public abstract log(severity: LogLevel, message: string, ...args: any[]): void;
 
 }
 
@@ -125,28 +108,7 @@ export class NullLogger extends LoggerBase {
   /**
    * @inheritDoc
    */
-  public error(message: string, ...args: any[]) {
-    // Do nothing.
-  }
-
-  /**
-   * @inheritDoc
-   */
-  public info(message: string, ...args: any[]) {
-    // Do nothing.
-  }
-
-  /**
-   * @inheritDoc
-   */
-  public notice(message: string, ...args: any[]) {
-    // Do nothing.
-  }
-
-  /**
-   * @inheritDoc
-   */
-  public warn(message: string, ...args: any[]) {
+  public log(level: LogLevel, message: string, ...args: any[]) {
     // Do nothing.
   }
 

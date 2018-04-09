@@ -19,12 +19,13 @@
 export * from './common/Event';
 export * from './common/Exception';
 export * from './common/Hash';
-export * from './common/Logger';
 export * from './common/Object';
 
 export * from './common/collections/List';
 
 export * from './common/diagnostics/Debug';
+export * from './common/diagnostics/Logger';
+export * from './common/diagnostics/LogLevel';
 export * from './common/diagnostics/Stopwatch';
 export * from './common/diagnostics/Trace';
 

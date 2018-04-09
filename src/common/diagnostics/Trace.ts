@@ -17,7 +17,8 @@
 'use strict';
 
 import { ArgumentOutOfRangeException } from '../Exception';
-import { ILogger } from '../Logger';
+import { ILogger } from './Logger';
+import { LogLevel } from './LogLevel';
 
 /**
  * @todo Experimental.
@@ -127,29 +128,11 @@ export class Trace {
   }
 
   /**
-   * Logs an error message to all trace listeners.
+   * Logs a message to all trace listeners.
    */
-  public static error(message: string, ...args: any[]): void {
+  public static log(message: string, ...args: any[]): void {
     for (let i = 0; i < Trace.listeners.length; i++) {
-      Trace.listeners[i].error(Trace._indent + message, ...args);
-    }
-  }
-
-  /**
-   * Logs an informational message to all trace listeners.
-   */
-  public static info(message: string, ...args: any[]): void {
-    for (let i = 0; i < Trace.listeners.length; i++) {
-      Trace.listeners[i].info(Trace._indent + message, ...args);
-    }
-  }
-
-  /**
-   * Logs a warning to all trace listeners.
-   */
-  public static warn(message: string, ...args: any[]): void {
-    for (let i = 0; i < Trace.listeners.length; i++) {
-      Trace.listeners[i].warn(Trace._indent + message, ...args);
+      Trace.listeners[i].log(LogLevel.Trace, Trace._indent + message, ...args);
     }
   }
 
