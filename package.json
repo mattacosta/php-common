@@ -27,7 +27,7 @@
     "scripts": {
         "build": "tsc -p ./src",
         "pretest": "tsc -p ./test",
-        "test": "nyc mocha --recursive ./out/test",
+        "test": "nyc --exclude out/test/** mocha --recursive ./out/test",
         "test:coverage": "nyc report --reporter=text-lcov | coveralls",
         "watch": "tsc -w -p ./src"
     }
