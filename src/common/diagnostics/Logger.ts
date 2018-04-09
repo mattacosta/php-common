@@ -98,6 +98,38 @@ export abstract class LoggerBase implements ILogger {
    */
   public abstract log(severity: LogLevel, message: string, ...args: any[]): void;
 
+  /**
+   * Formats a message with substitution placeholders.
+   *
+   * @param {string} message
+   *   The message, with zero or more of the following formatting placeholders:
+   *   - '%d': Outputs a replacement value as an integer.
+   *   - '%f': Outputs a replacement value as a floating-point number.
+   *   - '%s': Outputs a replacement value as a string.
+   *   - '%x': Outputs a replacement value as a hexadecimal number.
+   * @param {...any} values
+   *   The replacement values for each placeholder.
+   *
+   * @return {string}
+   *   A string with formatted replacement values.
+   */
+  protected static format(message: string, values: any[]): string {
+    return message.replace(/%[dfsx]/g, (match: string, offset: number, template: string) => {
+      const value = '' + values.shift();
+      switch (match) {
+        case '%d':
+          return Number.parseInt(value).toString(10);
+        case '%f':
+          // Defaults to a variable precision of up to 15 digits.
+          return Number.parseFloat(value).toString();
+        case '%x':
+          return Number.parseInt(value).toString(16);
+        default:
+          return value;
+      }
+    });
+  }
+
 }
 
 /**
