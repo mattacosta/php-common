@@ -21,7 +21,13 @@ import * as assert from 'assert';
 import { LoggerBase } from '../../../../src/common/diagnostics/Logger';
 import { LogLevel } from '../../../../src/common/diagnostics/LogLevel';
 
-abstract class TestLoggerBase extends LoggerBase {
+class TestLoggerBase extends LoggerBase {
+
+  public severity: LogLevel = LogLevel.Trace;
+
+  public log(severity: LogLevel, message: string, ...args: any[]) {
+    this.severity = severity;
+  }
 
   public static format(template: string, ...values: any[]): string {
     return LoggerBase.format(template, ...values);
@@ -38,6 +44,29 @@ class TestObject {
 }
 
 describe('LoggerBase', function() {
+
+  const logger = new TestLoggerBase();
+
+  describe('#error()', function() {
+    it('should log with error severity', () => {
+      logger.error('error');
+      assert.equal(logger.severity, LogLevel.Error);
+    });
+  });
+
+  describe('#warn()', function() {
+    it('should log with warning severity', () => {
+      logger.warn('warn');
+      assert.equal(logger.severity, LogLevel.Warning);
+    });
+  });
+
+  describe('#info()', function() {
+    it('should log with information severity', () => {
+      logger.info('info');
+      assert.equal(logger.severity, LogLevel.Information);
+    });
+  })
 
   describe('#format()', function() {
     it('should format value as a string', () => {
