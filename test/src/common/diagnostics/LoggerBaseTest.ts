@@ -24,7 +24,7 @@ import { LogLevel } from '../../../../src/common/diagnostics/LogLevel';
 abstract class TestLoggerBase extends LoggerBase {
 
   public static format(template: string, ...values: any[]): string {
-    return LoggerBase.format(template, values);
+    return LoggerBase.format(template, ...values);
   }
 
 }

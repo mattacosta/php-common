@@ -113,7 +113,7 @@ export abstract class LoggerBase implements ILogger {
    * @return {string}
    *   A string with formatted replacement values.
    */
-  protected static format(message: string, values: any[]): string {
+  protected static format(message: string, ...values: any[]): string {
     return message.replace(/%[dfsx]/g, (match: string, offset: number, template: string) => {
       const value = '' + values.shift();
       switch (match) {
