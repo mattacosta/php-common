@@ -73,21 +73,21 @@ export interface ILogger {
 export abstract class LoggerBase implements ILogger {
 
   /**
-   * @inheritDoc
+   * @inheritdoc
    */
   public error(message: string, ...args: any[]) {
     this.log(LogLevel.Error, message, ...args);
   }
 
   /**
-   * @inheritDoc
+   * @inheritdoc
    */
   public info(message: string, ...args: any[]) {
     this.log(LogLevel.Information, message, ...args);
   }
 
   /**
-   * @inheritDoc
+   * @inheritdoc
    */
   public warn(message: string, ...args: any[]): void {
     this.log(LogLevel.Warning, message, ...args);
@@ -138,7 +138,7 @@ export abstract class LoggerBase implements ILogger {
 export class NullLogger extends LoggerBase {
 
   /**
-   * @inheritDoc
+   * @inheritdoc
    */
   public log(level: LogLevel, message: string, ...args: any[]) {
     // Do nothing.
