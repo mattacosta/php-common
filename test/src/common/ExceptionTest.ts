@@ -31,7 +31,7 @@ describe('Exception', function() {
       assert(ex instanceof Exception);
     });
     it('name property should match class name', function() {
-      assert.equal(ex.name, 'Exception');
+      assert.strictEqual(ex.name, 'Exception');
     });
   });
 

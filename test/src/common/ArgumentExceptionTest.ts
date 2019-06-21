@@ -40,7 +40,7 @@ describe('ArgumentException', function() {
       assert(ex instanceof ArgumentException);
     })
     it('name property should match class name', function() {
-      assert.equal(ex.name, 'ArgumentException');
+      assert.strictEqual(ex.name, 'ArgumentException');
     });
   });
 

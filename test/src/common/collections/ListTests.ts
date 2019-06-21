@@ -29,25 +29,25 @@ describe('List<T>', function() {
     };
 
     it('should return -1 for empty lists', () => {
-      assert.equal(List.binarySearch([], 1, predicate), -1);  // ~0 == -1
+      assert.strictEqual(List.binarySearch([], 1, predicate), -1);  // ~0 == -1
     });
     it('should return first index', () => {
-      assert.equal(List.binarySearch(data, 1, predicate), 0);
+      assert.strictEqual(List.binarySearch(data, 1, predicate), 0);
     });
     it('should return second index', () => {
-      assert.equal(List.binarySearch(data, 2, predicate), 1);
+      assert.strictEqual(List.binarySearch(data, 2, predicate), 1);
     });
     it('should return third index', () => {
-      assert.equal(List.binarySearch(data, 4, predicate), 2);
+      assert.strictEqual(List.binarySearch(data, 4, predicate), 2);
     });
     it('should return last index', () => {
-      assert.equal(List.binarySearch(data, 5, predicate), 3);
+      assert.strictEqual(List.binarySearch(data, 5, predicate), 3);
     });
     it('should return middle index', () => {
-      assert.equal(List.binarySearch([1, 2, 3, 4, 5], 3, predicate), 2);
+      assert.strictEqual(List.binarySearch([1, 2, 3, 4, 5], 3, predicate), 2);
     });
     it('should return two\'s complement of index if value is not found', () => {
-      assert.equal(List.binarySearch(data, 3, predicate), ~2);
+      assert.strictEqual(List.binarySearch(data, 3, predicate), ~2);
     });
   });
 
@@ -70,7 +70,7 @@ describe('List<T>', function() {
     it('should map value to a key', () => {
       const map = List.toMap(data, selector);
       const values = map.get(4)!;
-      assert.equal(values[0], 3);
+      assert.strictEqual(values[0], 3);
     });
     it('should map values with same key', () => {
       const map = List.toMap(data, selector);

@@ -91,7 +91,7 @@ describe('Event', function() {
       let event = new TestEventEmitter<EventArgs>();
       event.addHandler(handler);
       event.removeHandler(handler);
-      assert.equal(event.eventHandlers.has(handler), false, 'handler was not removed');
+      assert.strictEqual(event.eventHandlers.has(handler), false, 'handler was not removed');
     });
     it('should remove a handler with context (single context)', () => {
       let event = new TestEventEmitter<EventArgs>();

@@ -50,21 +50,21 @@ describe('LoggerBase', function() {
   describe('#error()', function() {
     it('should log with error severity', () => {
       logger.error('error');
-      assert.equal(logger.severity, LogLevel.Error);
+      assert.strictEqual(logger.severity, LogLevel.Error);
     });
   });
 
   describe('#warn()', function() {
     it('should log with warning severity', () => {
       logger.warn('warn');
-      assert.equal(logger.severity, LogLevel.Warning);
+      assert.strictEqual(logger.severity, LogLevel.Warning);
     });
   });
 
   describe('#info()', function() {
     it('should log with information severity', () => {
       logger.info('info');
-      assert.equal(logger.severity, LogLevel.Information);
+      assert.strictEqual(logger.severity, LogLevel.Information);
     });
   })
 
