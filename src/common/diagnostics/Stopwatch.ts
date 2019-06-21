@@ -22,6 +22,11 @@
 declare var process: any;  // NodeJS.Process
 
 /**
+ * The global performance variable (if available).
+ */
+declare var performance: any;  // Performance
+
+/**
  * Provides methods to measure an elapsed time period.
  */
 export class Stopwatch {
@@ -95,10 +100,10 @@ export class Stopwatch {
    * Gets a timestamp with at least millisecond resolution.
    */
   protected getTimestamp(): number {
-    if (typeof process !== 'undefined' && process.nextTick) {
+    if (typeof process !== 'undefined' && typeof process.nextTick === 'function') {
       return Stopwatch.fromNodeTime(process.hrtime());
     }
-    else if (typeof performance !== 'undefined' && performance.now) {
+    else if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
       return performance.now();
     }
     else {
