@@ -12,10 +12,11 @@
         "url": "https://github.com/mattacosta/php-common/issues"
     },
     "files": [
-        "lib/"
+        "lib/src/**/*.js",
+        "typings/"
     ],
-    "main": "./lib/main.js",
-    "typings": "./lib/main.d.ts",
+    "main": "./lib/src/main.js",
+    "typings": "./typings/main.d.ts",
     "devDependencies": {
         "@types/mocha": "^5.2.7",
         "@types/node": "^10.14.9",
@@ -25,10 +26,10 @@
         "typescript": "^3.5.2"
     },
     "scripts": {
-        "build": "tsc -p ./src",
-        "pretest": "tsc -p ./test",
-        "test": "nyc --extension .ts mocha --recursive ./out/test",
+        "build": "tsc -b",
+        "pretest": "tsc -b",
+        "test": "nyc --extension .ts mocha --recursive ./lib/test",
         "test:coverage": "nyc report --reporter=text-lcov | coveralls",
-        "watch": "tsc -w -p ./src"
+        "watch": "tsc -b -w"
     }
 }

@@ -1,9 +1,10 @@
 {
+    "extends": "../tsconfig.base.json",
     "compilerOptions": {
-        "module": "commonjs",
-        "outDir": "../out",
-        "sourceMap": true,
-        "strict": true,
-        "target": "es2015"
-    }
+        "composite": true,
+        "outDir": "../lib/test"
+    },
+    "references": [
+        { "path": "../src" }
+    ]
 }
