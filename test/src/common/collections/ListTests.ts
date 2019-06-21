@@ -23,7 +23,7 @@ import { List } from '../../../../src/common/collections/List';
 describe('List<T>', function() {
 
   describe('#binarySearch()', function() {
-    const data = [1, 2, 4, 5];
+    const data: ReadonlyArray<number> = [1, 2, 4, 5];
     const predicate = (a: number, b: number) => {
       return a == b ? 0 : (a > b ? 1 : -1);
     };
@@ -48,6 +48,35 @@ describe('List<T>', function() {
     });
     it('should return two\'s complement of index if value is not found', () => {
       assert.equal(List.binarySearch(data, 3, predicate), ~2);
+    });
+  });
+
+  describe('#toMap()', function() {
+    const data: ReadonlyArray<number> = [1, 2, 3, 4];
+    const selector = (value: number): number => {
+      switch (value) {
+        case 1:
+        case 2:
+          return 0;
+        case 3:
+          return 4;
+        case 4:
+          return 3;
+        default:
+          return value;
+      }
+    };
+
+    it('should map value to a key', () => {
+      const map = List.toMap(data, selector);
+      const values = map.get(4)!;
+      assert.equal(values[0], 3);
+    });
+    it('should map values with same key', () => {
+      const map = List.toMap(data, selector);
+      const values = map.get(0)!;
+      assert.strictEqual(values[0], 1);
+      assert.strictEqual(values[1], 2);
     });
   });
 

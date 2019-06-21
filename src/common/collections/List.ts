@@ -91,4 +91,30 @@ export class List<T> {
     return ~low;
   }
 
+  /**
+   * Creates a `Map` from a list by determining a key for each value.
+   *
+   * @param {ReadonlyArray<V>} list
+   *   A list of values to convert into a `Map`.
+   * @param {(value: V) => K} selector
+   *   A callback that returns a key which is used to compare each value.
+   *
+   * @see Array.prototype.reduce()
+   */
+  public static toMap<K, V>(list: ReadonlyArray<V>, selector: (value: V) => K): Map<K, V[]> {
+    let map = new Map<K, V[]>();
+    for (let i = 0; i < list.length; i++) {
+      let key = selector(list[i]);
+      let bucket = map.get(key);
+      if (bucket) {
+        bucket.push(list[i]);
+        map.set(key, bucket);
+      }
+      else {
+        map.set(key, [list[i]]);
+      }
+    }
+    return map;
+  }
+
 }
