@@ -42,7 +42,7 @@ export interface IEvent<TEventArgs> {
    * @param {IEventHandler<TEventArgs>} handler
    *   The event handler to add.
    * @param {*} context
-   *   The value of `this` to use when invoking the event handler.
+   *   The value of `this` within the event handler.
    */
   addHandler(handler: IEventHandler<TEventArgs>, context?: any): void;
 
@@ -52,7 +52,7 @@ export interface IEvent<TEventArgs> {
    * @param {IEventHandler<TEventArgs>} handler
    *   The event handler to remove.
    * @param {*} context
-   *   The value of `this` to use when invoking the event handler.
+   *   The value of `this` within the event handler.
    */
   removeHandler(handler: IEventHandler<TEventArgs>, context?: any): void;
 
@@ -92,55 +92,51 @@ export class EventArgs {
  * to. When triggered, the subscribing handler is provided with the sender and
  * any custom event arguments.
  */
-export class Event<TEventArgs> implements IEventEmitter<TEventArgs> {
+export class EventEmitter<TEventArgs> implements IEventEmitter<TEventArgs> {
 
   /**
-   * A list of contexts used when invoking an event handler.
+   * A map of subscribed event handlers and their contexts.
    */
-  protected contexts: any[] = [];
+  protected handlers: Map<IEventHandler<TEventArgs>, Set<any>> = new Map();
 
   /**
-   * A list of subscribed event handlers.
-   */
-  protected handlers: IEventHandler<TEventArgs>[] = [];
-
-  /**
-   * @inheritDoc
+   * @inheritdoc
    */
   public addHandler(handler: IEventHandler<TEventArgs>, context?: any) {
-    // Make sure that event handlers are not added multiple times.
-    for (let i = 0; i < this.handlers.length; i++) {
-      if (this.handlers[i] === handler && this.contexts[i] === context) {
-        return;
-      }
+    const contexts = this.handlers.get(handler);
+    if (contexts === undefined) {
+      let set = new Set<any>();
+      set.add(context);
+      this.handlers.set(handler, set);
     }
-    this.contexts.push(context);
-    this.handlers.push(handler);
+    else {
+      contexts.add(context);
+    }
   }
 
   /**
-   * @inheritDoc
+   * @inheritdoc
    */
   public removeHandler(handler: IEventHandler<TEventArgs>, context?: any) {
-    for (let i = 0; i < this.handlers.length; i++) {
-      // Fun fact: You can't remove a handler if its context was NaN.
-      if (this.handlers[i] === handler && this.contexts[i] === context) {
-        this.contexts.splice(i, 1);
-        this.handlers.splice(i, 1);
-        break;
-      }
+    const contexts = this.handlers.get(handler);
+    if (contexts === undefined) {
+      return;
+    }
+    contexts.delete(context);
+    if (contexts.size === 0) {
+      this.handlers.delete(handler);
     }
   }
 
   /**
-   * @inheritDoc
+   * @inheritdoc
    */
   public trigger(sender: any, args: TEventArgs) {
-    for (let i = 0; i < this.handlers.length; i++) {
-      // @todo This does not handle the case where a handler tries to trigger
-      //   the same event again (the second event would be executed before the
-      //   first is complete).
-      this.handlers[i].call(this.contexts[i], sender, args);
+    const handlers = this.cloneHandlers();
+    for (let [handler, contexts] of handlers) {
+      for (let context of contexts) {
+        handler.call(context, sender, args);
+      }
     }
   }
 
@@ -148,8 +144,18 @@ export class Event<TEventArgs> implements IEventEmitter<TEventArgs> {
    * Releases all references to event handlers.
    */
   public dispose() {
-    this.contexts = [];
-    this.handlers = [];
+    this.handlers.clear();
+  }
+
+  /**
+   * Performs a deep clone of the subscribed event handlers.
+   */
+  protected cloneHandlers(): Map<IEventHandler<TEventArgs>, Set<any>> {
+    let handlers = new Map<IEventHandler<TEventArgs>, Set<any>>();
+    for (let [handler, contexts] of this.handlers) {
+      handlers.set(handler, new Set(contexts));
+    }
+    return handlers;
   }
 
 }

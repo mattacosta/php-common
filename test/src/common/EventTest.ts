@@ -19,25 +19,19 @@
 import * as assert from 'assert';
 
 import {
-  Event,
   EventArgs,
+  EventEmitter,
   IEventHandler
 } from '../../../src/common/Event';
 
 function handler(sender: any, args: EventArgs) {}
 
-function secondHandler(sender: any, args: EventArgs) {}
-
 /**
- * An event that exposes `Event<T>` properties.
+ * An event that exposes `EventEmitter<T>` properties.
  */
-class TestEvent<T> extends Event<T> {
+class TestEventEmitter<T> extends EventEmitter<T> {
 
-  public get eventContexts(): any[] {
-    return this.contexts;
-  }
-
-  public get eventHandlers(): IEventHandler<T>[] {
+  public get eventHandlers(): Map<IEventHandler<T>, Set<any>> {
     return this.handlers;
   }
 
@@ -56,96 +50,101 @@ class TestContext {
 
 }
 
+function assertHandlerAndContext<T>(handlers: Map<IEventHandler<T>, Set<any>>, handler: IEventHandler<T>, context: any) {
+  assert.strictEqual(handlers.has(handler), true, 'missing event handler');
+  const contexts = handlers.get(handler)!;
+  assert.strictEqual(contexts.has(context), true, 'missing context');
+}
+
 describe('Event', function() {
 
   describe('#addHandler', function() {
     it('should add a handler', () => {
-      let event = new TestEvent<EventArgs>();
+      let event = new TestEventEmitter<EventArgs>();
       event.addHandler(handler);
-      assert.strictEqual(event.eventHandlers[0], handler, 'handler was not added');
-      assert.strictEqual(event.eventContexts[0], void 0, 'context was not added');
-
-      event.addHandler(handler);
-      assert.equal(event.eventHandlers.length, 1, 'same handler was added');
-      assert.equal(event.eventContexts.length, 1, 'context was added');
+      assertHandlerAndContext(event.eventHandlers, handler, undefined);
     });
     it('should add a handler with context', () => {
-      let event = new TestEvent<EventArgs>();
+      let event = new TestEventEmitter<EventArgs>();
       event.addHandler(handler, 1);
-      assert.strictEqual(event.eventHandlers[0], handler, 'handler was not added');
-      assert.strictEqual(event.eventContexts[0], 1, 'context was not added');
-
-      event.addHandler(handler, 1);
-      assert.equal(event.eventHandlers.length, 1, 'handler with same context was added');
-      assert.equal(event.eventContexts.length, 1, 'context was added');
-    });
-    it('should add the same handler if the contexts are not equal', () => {
-      let event = new TestEvent<EventArgs>();
-      event.addHandler(handler, 1);
-      event.addHandler(handler, 2);
-      assert.strictEqual(event.eventHandlers[0], handler);
-      assert.strictEqual(event.eventHandlers[1], handler);
-      assert.strictEqual(event.eventContexts[0], 1);
-      assert.strictEqual(event.eventContexts[1], 2);
+      assertHandlerAndContext(event.eventHandlers, handler, 1);
     });
     it('should add multiple handlers', () => {
-      let event = new TestEvent<EventArgs>();
+      let event = new TestEventEmitter<EventArgs>();
+      let secondHandler = (sender: any, args: EventArgs) => {};
       event.addHandler(handler);
       event.addHandler(secondHandler);
-      assert.strictEqual(event.eventHandlers[0], handler);
-      assert.strictEqual(event.eventHandlers[1], secondHandler);
+      assertHandlerAndContext(event.eventHandlers, handler, undefined);
+      assertHandlerAndContext(event.eventHandlers, secondHandler, undefined);
+    });
+    it('should add multiple contexts', () => {
+      let event = new TestEventEmitter<EventArgs>();
+      event.addHandler(handler, 1);
+      event.addHandler(handler, 2);
+      assertHandlerAndContext(event.eventHandlers, handler, 1);
+      assertHandlerAndContext(event.eventHandlers, handler, 2);
     });
   });
 
   describe('#removeHandler()', function() {
     it('should remove a handler', () => {
-      let event = new TestEvent<EventArgs>();
+      let event = new TestEventEmitter<EventArgs>();
       event.addHandler(handler);
-
       event.removeHandler(handler);
-      assert.equal(event.eventHandlers.length, 0, 'handler was not removed');
-      assert.equal(event.eventContexts.length, 0, 'context was not removed');
+      assert.equal(event.eventHandlers.has(handler), false, 'handler was not removed');
     });
-    it('should remove a handler with context', () => {
-      let event = new TestEvent<EventArgs>();
+    it('should remove a handler with context (single context)', () => {
+      let event = new TestEventEmitter<EventArgs>();
       event.addHandler(handler, 1);
-
-      event.removeHandler(handler);
-      assert.equal(event.eventHandlers.length, 1, 'handler with different context was removed');
       event.removeHandler(handler, 1);
-      assert.equal(event.eventHandlers.length, 0, 'handler with same context was not removed');
+      assert.strictEqual(event.eventHandlers.has(handler), false, 'handler was not removed');
     });
-    it('should only remove a handler with the same context', () => {
-      let event = new TestEvent<EventArgs>();
+    it('should remove a handler with context (multiple contexts)', () => {
+      let event = new TestEventEmitter<EventArgs>();
       event.addHandler(handler, 1);
       event.addHandler(handler, 2);
-
-      event.removeHandler(handler, 1);
-      assert.strictEqual(event.eventHandlers[0], handler);
-      assert.strictEqual(event.eventContexts[0], 2);
+      event.removeHandler(handler, 2);
+      assertHandlerAndContext(event.eventHandlers, handler, 1);
+      let contexts = event.eventHandlers.get(handler)!;
+      assert.strictEqual(contexts.has(2), false, 'context was not removed');
     });
   });
 
   describe('#trigger()', function() {
     it('should invoke a handler', () => {
       let i = 0;
-      let event = new TestEvent<EventArgs>();
-      event.addHandler(() => { i++; });
-      event.trigger(null, new EventArgs());
-      assert.equal(i, 1);
+      let event = new TestEventEmitter<EventArgs>();
+      event.addHandler((sender: any, args: EventArgs) => { i++; });
+      event.trigger(null, EventArgs.Empty);
+      assert.strictEqual(i, 1);
     });
     it('should invoke a handler with a context', () => {
       let context = new TestContext();
-      let event = new TestEvent<EventArgs>();
+      let event = new TestEventEmitter<EventArgs>();
 
-      // If called without a context, `context.i` will be undefined.
+      // When called without a context, the handler will try to increment
+      // `undefined.i`, which will cause an exception to be thrown.
       event.addHandler(context.handler);
-      assert.throws(() => { event.trigger(null, new EventArgs()); });
+      assert.throws(() => { event.trigger(null, EventArgs.Empty); });
       event.removeHandler(context.handler);
 
       event.addHandler(context.handler, context);
-      event.trigger(null, new EventArgs());
-      assert.equal(context.i, 1);
+      event.trigger(null, EventArgs.Empty);
+      assert.strictEqual(context.i, 1);
+    });
+    it('should not change handlers during event', () => {
+      let x = 0, y = 0;
+      let event = new TestEventEmitter<EventArgs>();
+      let secondHandler = (sender: any, args: EventArgs) => { y++; };
+      let firstHandler = (sender: any, args: EventArgs) => {
+        x++;
+        event.removeHandler(secondHandler);
+      };
+      event.addHandler(firstHandler);
+      event.addHandler(secondHandler);
+      event.trigger(null, EventArgs.Empty);
+      assert.strictEqual(x, 1, 'must run first handler');
+      assert.strictEqual(y, 1, 'must run second handler');
     });
   });
 
