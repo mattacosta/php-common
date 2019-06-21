@@ -3,6 +3,7 @@
     "compilerOptions": {
         "composite": true,
         "outDir": "../lib/test",
+        "sourceMap": true,
         "types": [
             "mocha",
             "node"

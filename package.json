@@ -30,7 +30,10 @@
         "pretest": "tsc -b",
         "test": "mocha --recursive ./lib/test",
         "test:coveralls": "nyc report --reporter=text-lcov | coveralls",
-        "test:nyc": "nyc --extension .ts mocha --recursive ./lib/test",
+        "test:nyc": "nyc mocha --recursive ./lib/test",
         "watch": "tsc -b -w"
+    },
+    "nyc": {
+        "extension": [".ts"]
     }
 }
