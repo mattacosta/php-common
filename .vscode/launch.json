@@ -8,16 +8,16 @@
             "type": "node",
             "request": "launch",
             "name": "Mocha Tests",
-            "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
+            "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
             "args": [
-                "${workspaceRoot}/out/test",
+                "${workspaceFolder}/lib/test",
                 "--colors",
                 "--recursive",
                 "--timeout=99999"
             ],
             "internalConsoleOptions": "openOnSessionStart",
             "outFiles": [
-                "${workspaceRoot}/out/**/*.js"
+                "${workspaceFolder}/lib/**/*.js"
             ],
             "preLaunchTask": "pretest"
         }
