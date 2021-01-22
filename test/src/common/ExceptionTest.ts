@@ -71,7 +71,7 @@ describe('Exception', function() {
       assert(ex.stack);
     });
     it('first line of stack trace should include class name', function() {
-      assert.strictEqual(stack[0], 'Exception');
+      assert.strictEqual(stack[0].startsWith('Exception'), true);
     });
     it('first stack frame should be function where exception was thrown', function() {
       assert.strictEqual(stack[1].indexOf('at rethrow'), 4);
