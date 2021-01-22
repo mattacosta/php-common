@@ -20,17 +20,17 @@
     "devDependencies": {
         "@types/mocha": "^8.2.0",
         "@types/node": "^12.19.15",
-        "coveralls": "^3.1.0",
         "mocha": "^8.2.1",
         "nyc": "^15.1.0",
+        "source-map-support": "^0.5.19",
         "typescript": "^4.1.3"
     },
     "scripts": {
         "build": "tsc -b",
         "pretest": "tsc -b",
         "test": "mocha --recursive ./lib/test",
-        "test:coveralls": "nyc report --reporter=text-lcov | coveralls",
-        "test:nyc": "nyc mocha --recursive ./lib/test",
+        "test:nyc": "nyc mocha --require source-map-support/register --recursive ./lib/test",
+        "test:nyc:report": "nyc report --reporter=lcovonly",
         "watch": "tsc -b -w"
     }
 }
